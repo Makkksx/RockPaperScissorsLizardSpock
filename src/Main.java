@@ -1,20 +1,10 @@
 import java.util.Arrays;
 import java.util.Scanner;
 
-import static java.lang.Character.isDigit;
-
 public class Main {
     private static int count_args;
     public static void main(String[] args) {
-        count_args = args.length;
-        if (count_args % 2 == 0 || count_args < 3){
-            System.out.println("Please use an odd number of arguments >=3");
-            return;
-        }
-        if (Arrays.stream(args).distinct().count() != count_args){
-            System.out.println("Please use unique arguments");
-            return;
-        }
+        if (!checkArgs(args)) return;
         Rules.setRules(args);
         getMove(args);
     }
@@ -25,26 +15,38 @@ public class Main {
         System.out.println("0 exit");
         System.out.println("? help");
         String inputScanner  = new Scanner(System.in).nextLine();
-        if (inputScanner.length() > 1){
-            printError();
+        if (inputScanner.length() == 1 && inputScanner.charAt(0) =='?') {
+            Help_table.printHelp(Rules.getRules(), args);
             return getMove(args);
         }
-        char c = inputScanner.charAt(0);
-        if (c =='?') Help_table.printHelp(Rules.getRules(),args);
-        else if (isDigit(c)) {
-            int a=Character.getNumericValue(c);
-            if (a == 0) return "";
-            else if (0 < a && a <= count_args) {
-                System.out.println("Your move: " + args[a-1]);
+        int c = -1;
+        try {
+            c = Integer.parseInt(inputScanner);
+            if (c == 0) return "";
+            else if (0 < c && c <= count_args) {
+                System.out.println("Your move: " + args[c-1]);
                 System.out.println("Computer move: " + Generation.getMessage());
-                System.out.println("Result: " + Rules.getWinner(a-1,Generation.geCompMove()));
+                System.out.println("Result: " + Rules.getWinner(c-1,Generation.geCompMove()));
                 System.out.println("HMAC key: " + Generation.getKey());
                 System.out.println("-----------------------------------------");
-                return getMove(args);
             }
+            else printError();
+        }catch (NumberFormatException e) {
+            printError();
         }
-        printError();
         return getMove(args);
+    }
+    private static boolean checkArgs(String[] args){
+        count_args = args.length;
+        if (count_args % 2 == 0 || count_args < 3){
+            System.out.println("Please use an odd number of arguments >=3");
+            return false;
+        }
+        if (Arrays.stream(args).distinct().count() != count_args){
+            System.out.println("Please use unique arguments");
+            return false;
+        }
+        return true;
     }
     private static void printError(){
         System.out.println("Please use the available options");
