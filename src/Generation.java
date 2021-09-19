@@ -8,18 +8,22 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 
 public class Generation {
-    private static String message;
     private static final byte[] key = new byte[16];
-    private static byte[] HMAC;
-    private static String [] headers = null;
     private static final SecureRandom random = new SecureRandom();
-    private Generation() {}
-    public static String getHMAC(String[] args){
+    private static String message;
+    private static byte[] HMAC;
+    private static String[] headers = null;
+
+    private Generation() {
+    }
+
+    public static String getHMAC(String[] args) {
         headers = args;
         setHMAC();
         return Hex.encodeHexString(HMAC);
     }
-    private static void setHMAC(){
+
+    private static void setHMAC() {
         setMessage();
         setKey();
         try {
@@ -30,19 +34,24 @@ public class Generation {
             e.printStackTrace();
         }
     }
-    private static void setMessage(){
+
+    private static void setMessage() {
         message = headers[random.nextInt(headers.length)];
     }
-    public static String getMessage(){
+
+    public static String getMessage() {
         return message;
     }
-    public static int geCompMove(){
+
+    public static int geCompMove() {
         return Arrays.asList(headers).indexOf(message);
     }
-    private static void setKey(){
+
+    private static void setKey() {
         random.nextBytes(key);
     }
-    public static String getKey(){
+
+    public static String getKey() {
         return Hex.encodeHexString(key);
     }
 }
